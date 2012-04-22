@@ -1455,7 +1455,7 @@ static LLConstant* expand_to_sarray(Type *base, Expression* exp)
     while(1)
     {
         Logger::println("t: %s", t->toChars());
-        if (t->equals(expbase))
+        if (stripModifiers(t)->equals(expbase))
             break;
         assert(t->ty == Tsarray);
         TypeSArray* tsa = (TypeSArray*)t;
