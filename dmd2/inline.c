@@ -1,5 +1,5 @@
 
-// Copyright (c) 1999-2011 by Digital Mars
+// Copyright (c) 1999-2012 by Digital Mars
 // All Rights Reserved
 // written by Walter Bright
 // http://www.digitalmars.com
@@ -618,11 +618,11 @@ Expressions *arrayExpressiondoInline(Expressions *a, InlineDoState *ids)
         newa->setDim(a->dim);
 
         for (size_t i = 0; i < a->dim; i++)
-        {   Expression *e = a->tdata()[i];
+        {   Expression *e = (*a)[i];
 
             if (e)
                 e = e->doInline(ids);
-            newa->tdata()[i] = e;
+            (*newa)[i] = e;
         }
     }
     return newa;
@@ -639,11 +639,11 @@ Expression *SymOffExp::doInline(InlineDoState *ids)
     //printf("SymOffExp::doInline(%s)\n", toChars());
     for (size_t i = 0; i < ids->from.dim; i++)
     {
-        if (var == ids->from.tdata()[i])
+        if (var == ids->from[i])
         {
             SymOffExp *se = (SymOffExp *)copy();
 
-            se->var = (Declaration *)ids->to.tdata()[i];
+            se->var = (Declaration *)ids->to[i];
             return se;
         }
     }
@@ -655,11 +655,11 @@ Expression *VarExp::doInline(InlineDoState *ids)
     //printf("VarExp::doInline(%s)\n", toChars());
     for (size_t i = 0; i < ids->from.dim; i++)
     {
-        if (var == ids->from.tdata()[i])
+        if (var == ids->from[i])
         {
             VarExp *ve = (VarExp *)copy();
 
-            ve->var = (Declaration *)ids->to.tdata()[i];
+            ve->var = (Declaration *)ids->to[i];
             return ve;
         }
     }
@@ -709,7 +709,7 @@ Expression *DeclarationExp::doInline(InlineDoState *ids)
         if (td)
         {
             for (size_t i = 0; i < td->objects->dim; i++)
-            {   DsymbolExp *se = td->objects->tdata()[i];
+            {   DsymbolExp *se = (*td->objects)[i];
                 assert(se->op == TOKdsymbol);
                 se->s;
             }
@@ -1098,8 +1098,8 @@ Statement *SwitchStatement::inlineScan(InlineScanState *iss)
         for (size_t i = 0; i < cases->dim; i++)
         {   CaseStatement *s;
 
-            s =  cases->tdata()[i];
-            cases->tdata()[i] = (CaseStatement *)s->inlineScan(iss);
+            s =  (*cases)[i];
+            (*cases)[i] = (CaseStatement *)s->inlineScan(iss);
         }
     }
     return this;
@@ -1162,7 +1162,7 @@ Statement *TryCatchStatement::inlineScan(InlineScanState *iss)
     if (catches)
     {
         for (size_t i = 0; i < catches->dim; i++)
-        {   Catch *c = catches->tdata()[i];
+        {   Catch *c = (*catches)[i];
 
             if (c->handler)
                 c->handler = c->handler->inlineScan(iss);
@@ -1212,12 +1212,12 @@ void arrayInlineScan(InlineScanState *iss, Expressions *arguments)
     if (arguments)
     {
         for (size_t i = 0; i < arguments->dim; i++)
-        {   Expression *e = arguments->tdata()[i];
+        {   Expression *e = (*arguments)[i];
 
             if (e)
             {
                 e = e->inlineScan(iss);
-                arguments->tdata()[i] = e;
+                (*arguments)[i] = e;
             }
         }
     }
@@ -1237,7 +1237,7 @@ void scanVar(Dsymbol *s, InlineScanState *iss)
         if (td)
         {
             for (size_t i = 0; i < td->objects->dim; i++)
-            {   DsymbolExp *se = (DsymbolExp *)td->objects->tdata()[i];
+            {   DsymbolExp *se = (DsymbolExp *)(*td->objects)[i];
                 assert(se->op == TOKdsymbol);
                 scanVar(se->s, iss);
             }
@@ -1546,7 +1546,7 @@ int FuncDeclaration::canInline(int hasthis, int hdrscan, int statementsToo)
     {
         for (size_t i = 0; i < parameters->dim; i++)
         {
-            VarDeclaration *v = parameters->tdata()[i];
+            VarDeclaration *v = (*parameters)[i];
             if (v->type->toBasetype()->ty == Tsarray)
                 goto Lno;
         }
@@ -1701,9 +1701,9 @@ Expression *FuncDeclaration::expandInline(InlineScanState *iss, Expression *ethi
 
         for (size_t i = 0; i < arguments->dim; i++)
         {
-            VarDeclaration *vfrom = parameters->tdata()[i];
+            VarDeclaration *vfrom = (*parameters)[i];
             VarDeclaration *vto;
-            Expression *arg = arguments->tdata()[i];
+            Expression *arg = (*arguments)[i];
             ExpInitializer *ei;
             VarExp *ve;
 

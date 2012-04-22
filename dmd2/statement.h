@@ -664,6 +664,7 @@ struct SwitchErrorStatement : Statement
 struct ReturnStatement : Statement
 {
     Expression *exp;
+    int implicit0;
 
     ReturnStatement(Loc loc, Expression *exp);
     Statement *syntaxCopy();
