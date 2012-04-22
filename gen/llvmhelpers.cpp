@@ -1482,8 +1482,8 @@ static LLConstant* expand_to_sarray(Type *base, Expression* exp)
 LLConstant* DtoConstExpInit(Loc loc, Type* type, Expression* exp)
 {
 #if DMDV2
-    Type* expbase = exp->type->toBasetype()->mutableOf()->merge();
-    Type* base = type->toBasetype()->mutableOf()->merge();
+    Type* expbase = stripModifiers(exp->type->toBasetype())->merge();
+    Type* base = stripModifiers(type->toBasetype())->merge();
 #else
     Type* expbase = exp->type->toBasetype();
     Type* base = type->toBasetype();
