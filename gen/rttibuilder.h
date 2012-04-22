@@ -32,6 +32,7 @@ struct RTTIBuilder
     void push_string(const char* str);
     void push_typeinfo(Type* t);
     void push_classinfo(ClassDeclaration* cd);
+    void push_rt_info(Expression *rtInfo, bool hasPointers);
 
     /// pushes the function pointer or a null void* if it cannot.
     void push_funcptr(FuncDeclaration* fd, Type* castto = NULL);

@@ -141,6 +141,16 @@ void RTTIBuilder::push_funcptr(FuncDeclaration* fd, Type* castto)
     }
 }
 
+void RTTIBuilder::push_rt_info(Expression *rtInfo, bool hasPointers)
+{
+    if (rtInfo)
+        push(DtoBitCast(rtInfo->toConstElem(gIR), getVoidPtrType()));
+    else if (hasPointers)
+        push(llvm::ConstantExpr::getIntToPtr(DtoConstInt(1), getVoidPtrType()));
+    else
+        push_null_vp();
+}
+
 void RTTIBuilder::finalize(IrGlobal* tid)
 {
     finalize(tid->type, tid->value);

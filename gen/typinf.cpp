@@ -711,7 +711,7 @@ void TypeInfoStructDeclaration::llvmDefine()
            (global.params.is64bit && tscd->fields.dim == 13));
 
     // const(MemberInfo[]) function(in char[]) xgetMembers;
-    b.push_funcptr(sd->findGetMembers());
+    //b.push_funcptr(sd->findGetMembers());
 
     //void function(void*)                    xdtor;
     b.push_funcptr(sd->dtor);
@@ -741,6 +741,9 @@ void TypeInfoStructDeclaration::llvmDefine()
                 b.push_null(Type::typeinfo->type);
         }
     }
+
+    // immutable(void)* m_RTInfo;
+    b.push_rt_info(sd->getRTInfo, hasptrs);
 
 #endif
 

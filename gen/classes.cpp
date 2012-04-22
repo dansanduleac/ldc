@@ -676,7 +676,8 @@ LLConstant* DtoDefineClassInfo(ClassDeclaration* cd)
 //         OffsetTypeInfo[] offTi;
 //         void *defaultConstructor;
 //         version(D_Version2)
-//              const(MemberInfo[]) function(string) xgetMembers;
+//              //const(MemberInfo[]) function(string) xgetMembers;
+//              immutable(void)* m_RTInfo;
 //         else
 //              TypeInfo typeinfo; // since dmd 1.045
 //        }
@@ -761,10 +762,12 @@ LLConstant* DtoDefineClassInfo(ClassDeclaration* cd)
     b.push_funcptr(cd->inv, invVar->type);
 
     // uint flags
+    unsigned flags = 0;
     if (cd->isInterfaceDeclaration())
-        b.push_uint(4 | cd->isCOMinterface() | 32);
+        flags = 4 | cd->isCOMinterface() | 32;
     else
-        b.push_uint(build_classinfo_flags(cd));
+        flags = build_classinfo_flags(cd);
+    b.push_uint(flags);
 
     // deallocator
     b.push_funcptr(cd->aggDelete, Type::tvoid->pointerTo());
@@ -792,8 +795,11 @@ LLConstant* DtoDefineClassInfo(ClassDeclaration* cd)
 #if DMDV2
 
     // xgetMembers
-    VarDeclaration* xgetVar = (VarDeclaration*)cinfo->fields.data[11];
-    b.push_funcptr(cd->findGetMembers(), xgetVar->type);
+    //VarDeclaration* xgetVar = (VarDeclaration*)cinfo->fields.data[11];
+    //b.push_funcptr(cd->findGetMembers(), xgetVar->type);
+
+    // immutable(void)* m_RTInfo;
+    b.push_rt_info(cinfo->getRTInfo, !(flags & 2));
 
 #else
 
